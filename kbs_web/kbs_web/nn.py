@@ -28,7 +28,7 @@ https://github.com/miloharper/multi-layer-neural-network/blob/master/main.py
 """
 
 class KBSPurchaseRegressor(object):
-    def __init__(self, fleet_data):
+    def __init__(self, fleet_data=None, retrain=False):
         self.seed = 1
         np.random.seed(self.seed)
  
@@ -36,12 +36,15 @@ class KBSPurchaseRegressor(object):
         self.fleet_data = fleet_data
 
         self.pickle_location = "kbs_model.pickle"
-        if os.path.isfile(self.pickle_location):
-           self.model = pickle.load(open(self.pickle_location, 'rb'))
+        if not retrain or os.path.isfile(self.pickle_location):
+           with open(self.pickle_location, 'rb') as f:
+               self.model = pickle.load(f)
         else:
            self.prepare_data()
            self.train_model()
-           pickle.dump(self.model, open(self.pickle_location, 'wb'))
+
+           with open(self.pickle_location, 'wb') as f:
+               pickle.dump(self.model, f)
         
     def predict(self):
         return self.scaler.inverse_transform(
@@ -60,7 +63,10 @@ class KBSPurchaseRegressor(object):
         self.y = self.scaler.fit_transform(
             np.array(fleet_purchased).astype('float32').reshape(-1, 1))
 
-    def train_model(self):        
+    def train_model(self):
+        """
+        Create a keras model and train it using data provided
+        """
         # evaluate model with standardized dataset
         self.model = KerasRegressor(
             build_fn=self.setup_model, 
@@ -84,11 +90,16 @@ class KBSPurchaseRegressor(object):
         print "Model Test Score: %.2f" % self.model.score(self.X_test, self.y_test)
        
     def setup_model(self):
+        """
+        Create a Keras sequential neural network model
+        Has an input LSTM recurrent layer, with 4 units/nodes
+        And and output dense layer 
+        """
         #create model
         model = Sequential([
            # create and fit the LSTM network
            LSTM(4, input_shape=(1, 1)),
-           Dense(1)
+           Dense(1, activation="relu")
         ])
 
         # Compile model
@@ -96,6 +107,14 @@ class KBSPurchaseRegressor(object):
         return model
 
     def get_sales_by_year(self):
+        """
+        observe dataset of fleet and calculate the possible
+        sale of cars by year
+
+        @returns a dictionary of sales by year;
+           keys: string of year
+           values: tuple pair of sales and frequency
+        """
         rows = sorted(list((" ".join(r[:2]), r[2]) for r in csv.reader(open(self.fleet_data)))[1:])
         dataset = [(
                rows[i][0], 
@@ -117,6 +136,13 @@ class KBSPurchaseRegressor(object):
         return sales_by_year
  
     def get_cleaned_data(self):
+        """
+        Calculates frequency of purchases
+        and returns a iterable of 
+        (year, total purchase, frequency)
+   
+        @returns a generator of tuples
+        """
         data =  self.get_sales_by_year()
         #sort by year
         items = sorted(data.items(), key=lambda x:x[0])
@@ -128,6 +154,7 @@ class KBSPurchaseRegressor(object):
         """
         Take in a string and extract a
         Kenyan vehicle number plate.
+
         >>> extract_number_plate("KBL 468B")
         ["KBL 468B"]
         >>> extract_number_plate("GBS 333")
@@ -135,7 +162,8 @@ class KBSPurchaseRegressor(object):
         >>> extract_number_plate("KRE 635")
         ["KRE 635"]
          >>> extract_number_plate("KTB 222")
-        @return a list of number plates
+
+        @returns a list of number plates
         """
 
         number_plate_regex_pattern = r"(K[A-Z]{2}\ [0-9]{3}[A-Z]{0,1})"
@@ -143,9 +171,23 @@ class KBSPurchaseRegressor(object):
 
     _cache = None
     def calculate_number_of_plates(self, plate_a, plate_b):
+        """
+        Calculate the number of vehicle purchases between two number plates
+  
+        Example:
+        >>>  calculate_number_of_plates("KBS 200K", "KCL 444J")
+        329900
+
+        @returns an integer; number of vehicles
+        """
+
         def generate_plate_numbers():
             """
-            Generate the test values
+            Simulates the plate number generator, returning
+            an iterable with all the possible plate numbers 
+            in Kenya.
+
+            @returns a generator; list(generate_plate_numbers()) to get a list
             """
             for a in string.ascii_uppercase:
                 for b in string.ascii_uppercase:

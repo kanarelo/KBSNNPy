@@ -27,7 +27,8 @@ SECRET_KEY = 'y6@w4(r)r+nc@vzcz8t(ox_1*um4c#qs48mwy+ol#ohf@!e225'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-   
+   'http://blis.ilabafrica.ac.ke/',
+   '0.0.0.0'   
 ]
 
 
@@ -57,7 +58,7 @@ ROOT_URLCONF = 'kbs_web.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, "kbs_web",  "templates")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

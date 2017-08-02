@@ -18,6 +18,6 @@ from django.contrib import admin
 from kbs_web import views
 
 urlpatterns = [
-    url(r'^kbs/$', views.index, name='index'),
+    url(r'^$', views.index, name='index'),
     url(r'^admin/', admin.site.urls),
 ]
