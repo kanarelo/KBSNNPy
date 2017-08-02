@@ -1,9 +1,11 @@
 import re
+import os
 import csv
 import math
 import string
 import itertools
 import numpy as np
+import pickle
 
 from keras.models import Sequential
 from keras.layers import LSTM, Dense
@@ -33,7 +35,13 @@ class KBSPurchaseRegressor(object):
         self.scaler = MinMaxScaler(feature_range=(0, 1))
         self.fleet_data = fleet_data
 
-        self.prepare_data()
+        self.pickle_location = "kbs_model.pickle"
+        if os.path.isfile(self.pickle_location):
+           self.model = pickle.load(open(self.pickle_location, 'rb'))
+        else:
+           self.prepare_data()
+           self.train_model()
+           pickle.dump(self.model, open(self.pickle_location, 'wb'))
         
     def predict(self):
         return self.scaler.inverse_transform(
@@ -51,7 +59,8 @@ class KBSPurchaseRegressor(object):
         #get items of column "Fleet Purchased", and reshape to 2D
         self.y = self.scaler.fit_transform(
             np.array(fleet_purchased).astype('float32').reshape(-1, 1))
-        
+
+    def train_model(self):        
         # evaluate model with standardized dataset
         self.model = KerasRegressor(
             build_fn=self.setup_model, 
@@ -79,7 +88,6 @@ class KBSPurchaseRegressor(object):
         model = Sequential([
            # create and fit the LSTM network
            LSTM(4, input_shape=(1, 1)),
-           Dense(1, activation="relu"),
            Dense(1)
         ])
 
