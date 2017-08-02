@@ -3,6 +3,8 @@ from nn import KBSPurchaseRegressor
 
 def index(request):
     template = "index.html"
+    kbs_regressor = KBSPurchaseRegressor()
+
     return render_to_response(template, {
-        "regressor": 
+        "regressor": kbs_regressor
     })
