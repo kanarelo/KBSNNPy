@@ -1,3 +1,4 @@
+
 import re
 import os
 import csv
@@ -33,10 +34,13 @@ class KBSPurchaseRegressor(object):
         np.random.seed(self.seed)
  
         self.scaler = MinMaxScaler(feature_range=(0, 1))
+
+        if fleet_data is None:
+           fleet_data = "kbs_web/fleet2.csv"
         self.fleet_data = fleet_data
 
         self.pickle_location = "kbs_model.pickle"
-        if not retrain or os.path.isfile(self.pickle_location):
+        if not retrain and os.path.isfile(self.pickle_location):
            with open(self.pickle_location, 'rb') as f:
                self.model = pickle.load(f)
         else:
@@ -45,7 +49,7 @@ class KBSPurchaseRegressor(object):
 
            with open(self.pickle_location, 'wb') as f:
                pickle.dump(self.model, f)
-        
+
     def predict(self):
         return self.scaler.inverse_transform(
             self.model.predict(self.X_test))
@@ -69,7 +73,7 @@ class KBSPurchaseRegressor(object):
         """
         # evaluate model with standardized dataset
         self.model = KerasRegressor(
-            build_fn=self.setup_model, 
+            build_fn=self.setup_model,
             nb_epoch=200,
             batch_size=1,
             verbose=2)
@@ -86,9 +90,9 @@ class KBSPurchaseRegressor(object):
         self.X_test = np.reshape(self.X_test, (self.X_test.shape[0], 1, self.X_test.shape[1]))
 
         self.model.fit(self.X_train, self.y_train)
-  
+
         print "Model Test Score: %.2f" % self.model.score(self.X_test, self.y_test)
-       
+
     def setup_model(self):
         """
         Create a Keras sequential neural network model
@@ -134,13 +138,13 @@ class KBSPurchaseRegressor(object):
             sales_by_year[year] = next_values
 
         return sales_by_year
- 
+
     def get_cleaned_data(self):
         """
         Calculates frequency of purchases
-        and returns a iterable of 
+        and returns a iterable of
         (year, total purchase, frequency)
-   
+
         @returns a generator of tuples
         """
         data =  self.get_sales_by_year()
@@ -173,7 +177,7 @@ class KBSPurchaseRegressor(object):
     def calculate_number_of_plates(self, plate_a, plate_b):
         """
         Calculate the number of vehicle purchases between two number plates
-  
+
         Example:
         >>>  calculate_number_of_plates("KBS 200K", "KCL 444J")
         329900

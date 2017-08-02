@@ -28,7 +28,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
    'http://blis.ilabafrica.ac.ke/',
-   '0.0.0.0'   
+   '0.0.0.0',
+   'nn-py.ajabworld.net',
+   '67.207.88.185'
 ]
 
 
