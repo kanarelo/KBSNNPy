@@ -33,7 +33,7 @@ class KBSPurchaseRegressor(object):
         self.scaler = MinMaxScaler(feature_range=(0, 1))
         self.fleet_data = fleet_data
 
-        self.prepate_data()
+        self.prepare_data()
         
     def predict(self):
         return self.scaler.inverse_transform(
@@ -47,10 +47,10 @@ class KBSPurchaseRegressor(object):
 
         #get items of column "Vehicles Registered", and reshape to 2D
         self.X = self.scaler.fit_transform(
-            np.array(vehicles_registered).astype('float32').values.reshape(-1, 1))
+            np.array(vehicles_registered).astype('float32').reshape(-1, 1))
         #get items of column "Fleet Purchased", and reshape to 2D
         self.y = self.scaler.fit_transform(
-            np.array(fleet_purchased).astype('float32').values.reshape(-1, 1))
+            np.array(fleet_purchased).astype('float32').reshape(-1, 1))
         
         # evaluate model with standardized dataset
         self.model = KerasRegressor(
@@ -109,9 +109,6 @@ class KBSPurchaseRegressor(object):
         return sales_by_year
  
     def get_cleaned_data(self):
-        """
-        
-        """
         data =  self.get_sales_by_year()
         #sort by year
         items = sorted(data.items(), key=lambda x:x[0])
@@ -119,7 +116,7 @@ class KBSPurchaseRegressor(object):
         for year, (total_purchases, frequency) in items:
             yield year, total_purchases, frequency
 
-    def extract_number_plate(sentence):
+    def extract_number_plate(self, sentence):
         """
         Take in a string and extract a
         Kenyan vehicle number plate.
@@ -137,9 +134,7 @@ class KBSPurchaseRegressor(object):
         return re.findall(number_plate_regex_pattern, sentence.upper())
 
     _cache = None
-    def calculate_number_of_plates(plate_a, plate_b):
-        global _cache
-
+    def calculate_number_of_plates(self, plate_a, plate_b):
         def generate_plate_numbers():
             """
             Generate the test values
@@ -152,8 +147,8 @@ class KBSPurchaseRegressor(object):
                              for c in string.ascii_uppercase:
                                  yield "K%s%s %d%d%d%s" % (a, b, i, j, k, c)
 
-        if _cache is None:
-            _cache = list(self.generate_plate_numbers())
-        plates = _cache
+        if KBSPurchaseRegressor._cache is None:
+            KBSPurchaseRegressor._cache = list(generate_plate_numbers())
+        plates = KBSPurchaseRegressor._cache
 
         return abs(plates.index(plate_a) - plates.index(plate_b))
