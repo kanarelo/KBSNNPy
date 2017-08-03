@@ -196,5 +196,13 @@ class KBSPurchaseRegressor(object):
         if KBSPurchaseRegressor._cache is None:
             KBSPurchaseRegressor._cache = list(generate_plate_numbers())
         plates = KBSPurchaseRegressor._cache
-
+        
         return abs(plates.index(plate_a) - plates.index(plate_b))
+
+if __name__ == "__main__":
+    training_data = "kbs_web/fleet2.csv"
+    
+    regressor = KBSPurchaseRegressor(training_data)
+    purchase_prediction = regressor.predict()
+
+    print "The number of likely purchase over the next 3 years is: ", map(int, purchase_prediction)
