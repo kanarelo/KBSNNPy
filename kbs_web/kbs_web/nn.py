@@ -25,6 +25,17 @@ http://colah.github.io/posts/2015-08-Understanding-LSTMs/
 https://elitedatascience.com/keras-tutorial-deep-learning-in-python
 https://keras.io/getting-started/sequential-model-guide/
 https://github.com/miloharper/multi-layer-neural-network/blob/master/main.py
+
+KNBS:
+https://www.knbs.or.ke/download/lei-december-2015/
+https://www.knbs.or.ke/download/lei-december-2014/
+https://www.knbs.or.ke/download/lei-december-2013/
+https://www.knbs.or.ke/download/lei-december-2012/
+https://www.knbs.or.ke/download/lei-december-2011/
+https://www.knbs.or.ke/download/lei-december-2010/
+https://www.knbs.or.ke/download/lei-december-2009/
+https://www.knbs.or.ke/download/lei-december-2008/
+https://www.knbs.or.ke/download/lei-december-2007/
 """
 
 class KBSPurchaseRegressor(object):
