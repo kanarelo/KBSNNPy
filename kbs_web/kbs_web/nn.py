@@ -32,29 +32,20 @@ class KBSPurchaseRegressor(object):
     def __init__(self, fleet_data=None, retrain=False):
         self.seed = 1
         np.random.seed(self.seed)
- 
         self.scaler = MinMaxScaler(feature_range=(0, 1))
 
         if fleet_data is None:
-           fleet_data = "kbs_web/fleet2.csv"
+           fleet_data = "kbs_web/fleet_with_years.csv"
         self.fleet_data = fleet_data
-
-        self.pickle_location = "kbs_model.pickle"
-        if not retrain and os.path.isfile(self.pickle_location):
-           with open(self.pickle_location, 'rb') as f:
-               self.model = pickle.load(f)
-        else:
-           self.prepare_data()
-           self.train_model()
-
-           with open(self.pickle_location, 'wb') as f:
-               pickle.dump(self.model, f)
 
     def predict(self):
         return self.scaler.inverse_transform(
             self.model.predict(self.X_test))
 
     def prepare_data(self):
+        """
+        Read fleet_with_years.csv and train model with data
+        """
         cleaned_data = list(self.get_cleaned_data())
 
         vehicles_registered = np.array(list((v,) for (y, v, f) in cleaned_data))
@@ -71,6 +62,8 @@ class KBSPurchaseRegressor(object):
         """
         Create a keras model and train it using data provided
         """
+        self.prepare_data()
+
         # evaluate model with standardized dataset
         self.model = KerasRegressor(
             build_fn=self.setup_model,
@@ -198,8 +191,8 @@ class KBSPurchaseRegressor(object):
                     for i in range(10):
                         for j in range(10):
                             for k in range(10):
-                             for c in string.ascii_uppercase:
-                                 yield "K%s%s %d%d%d%s" % (a, b, i, j, k, c)
+                                for c in string.ascii_uppercase:
+                                    yield "K%s%s %d%d%d%s" % (a, b, i, j, k, c)
 
         if KBSPurchaseRegressor._cache is None:
             KBSPurchaseRegressor._cache = list(generate_plate_numbers())
