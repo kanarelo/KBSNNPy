@@ -214,6 +214,9 @@ if __name__ == "__main__":
     training_data = "kbs_web/fleet2.csv"
     
     regressor = KBSPurchaseRegressor(training_data)
+    regressor.setup_model()
+    regressor.train_model()
+    
     purchase_prediction = regressor.predict()
 
     print "The number of likely purchase over the next 3 years is: ", map(int, purchase_prediction)
