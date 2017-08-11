@@ -7,6 +7,8 @@ def main():
     training_data = "kbs_web/fleet2.csv"
 
     regressor = KBSPurchaseRegressor(training_data)
+    regressor.setup_model()
+    
     purchase_prediction = regressor.predict()
     
     print "The number of likely purchase over the next year is: ", purchase_prediction
