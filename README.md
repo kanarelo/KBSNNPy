@@ -32,4 +32,12 @@ $ python main.py
 `3. Running the web version`
 ```bash
 $ python manage.py runserver
+Performing system checks...
+
+Using TensorFlow backend.
+System check identified no issues (0 silenced).
+August 11, 2017 - 05:05:51
+Django version 1.10.6, using settings 'kbs_web.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
 ```
